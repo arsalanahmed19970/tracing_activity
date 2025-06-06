@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracing_activity/DraggablePointer.dart';
 import 'package:tracing_activity/LetterData.dart';
+import 'package:tracing_activity/LetterOutlinePainter.dart';
 import 'package:tracing_activity/TracingBubble.dart';
 import 'package:tracing_activity/TracingDot.dart';
 import 'package:tracing_activity/TracingPathPainter.dart';
@@ -193,6 +194,10 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
           },
           child: Stack(
             children: [
+              CustomPaint(
+                painter: LetterOutlinePainter(widget.letter),
+                size: Size.infinite,
+              ),
               ...dotPositions
                   .where((tp) => !tp.isNukta)
                   .map(
