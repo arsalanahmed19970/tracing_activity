@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: const Text("Urdu Letter Tracing")),
       body: Container(
         decoration: BoxDecoration(
-          color: Color(0xFFA7D66E), // Green background like your image
+          color: Color.fromARGB(255, 98, 236, 119), // Green background like your image
           // image: DecorationImage(
           //   image: AssetImage('assets/bear.jpg'), // Optional
           //   fit: BoxFit.cover,

@@ -11,8 +11,8 @@ class TracingDot extends StatelessWidget {
       left: position.dx - 5,
       top: position.dy - 5,
       child: Container(
-        width: isNukta ? 10 : 10,
-        height: isNukta ? 10 : 10,
+        width: isNukta ? 2 : 10,
+        height: isNukta ? 2 : 10,
         decoration: BoxDecoration(
           color: isNukta ? Colors.red : Colors.black,
           shape: isNukta ? BoxShape.rectangle : BoxShape.circle,

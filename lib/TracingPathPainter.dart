@@ -11,7 +11,7 @@ class TracingPathPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = Colors.blueAccent
-      ..strokeWidth = 22
+      ..strokeWidth = 25
       ..style = PaintingStyle.stroke;
 
     for (int i = 0; i < path.length - 1; i++) {
