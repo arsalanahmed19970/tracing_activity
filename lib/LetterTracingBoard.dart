@@ -51,6 +51,22 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
     super.dispose();
   }
 
+  Rect calculateBoundingBox(List<TracingPoint> points) {
+    double minX = points.first.position.dx;
+    double minY = points.first.position.dy;
+    double maxX = points.first.position.dx;
+    double maxY = points.first.position.dy;
+
+    for (var point in points) {
+      minX = point.position.dx < minX ? point.position.dx : minX;
+      minY = point.position.dy < minY ? point.position.dy : minY;
+      maxX = point.position.dx > maxX ? point.position.dx : maxX;
+      maxY = point.position.dy > maxY ? point.position.dy : maxY;
+    }
+
+    return Rect.fromLTRB(minX, minY, maxX, maxY);
+  }
+
   void resetTracing() {
     setState(() {
       tracedPath.clear();
@@ -92,16 +108,24 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
   @override
   Widget build(BuildContext context) {
     final pointerPos = currentPosition;
+    final screenSize = MediaQuery.of(context).size;
+    final boundingBox = calculateBoundingBox(dotPositions);
+    final double dx =
+        (screenSize.width / 2) - (boundingBox.left + boundingBox.width / 2);
+    final double dy =
+        (screenSize.height / 2) - (boundingBox.top + boundingBox.height / 2);
+    final Offset centerOffset = Offset(dx, dy);
 
     return GestureDetector(
       onPanStart: (details) {
         // Only start if we're close to the first dot
         if (currentDotIndex == 0) {
           final startPoint = dotPositions[0].position;
-          final distance = (details.localPosition - startPoint).distance;
+          final distance =
+              (details.localPosition - startPoint + centerOffset).distance;
           if (distance < 25) {
             setState(() {
-              tracedPath.add(startPoint);
+              tracedPath.add(startPoint + centerOffset);
               isTracingComplete = false;
               stopNuktaBlinking();
               isPausedDueToDeviation = false;
@@ -175,7 +199,12 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
           // First render non-nukta points
           ...dotPositions
               .where((tp) => !tp.isNukta)
-              .map((tp) => TracingDot(position: tp.position, isNukta: false)),
+              .map(
+                (tp) => TracingDot(
+                  position: tp.position + centerOffset,
+                  isNukta: false,
+                ),
+              ),
           // Then render nukta points only if tracing is complete
           if (isTracingComplete)
             ...dotPositions
@@ -198,15 +227,18 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
                   ),
                 ),
           CustomPaint(
-            painter: TracingPathPainter(tracedPath),
+            painter: TracingPathPainter(
+              tracedPath.map((p) => p + centerOffset).toList(),
+            ),
+
             size: Size.infinite,
           ),
           if (currentDotIndex < dotPositions.length &&
               !dotPositions[currentDotIndex].isNukta)
-            DraggablePointer(position: pointerPos),
+            DraggablePointer(position: pointerPos + centerOffset),
           if (currentDotIndex < dotPositions.length &&
               !dotPositions[currentDotIndex].isNukta)
-            TracingBubble(position: pointerPos),
+            TracingBubble(position: pointerPos + centerOffset),
         ],
       ),
     );

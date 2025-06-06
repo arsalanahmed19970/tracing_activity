@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class DraggablePointer extends StatelessWidget {
   final Offset position;
 
