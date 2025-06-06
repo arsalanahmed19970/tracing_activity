@@ -4,12 +4,12 @@ import 'TracingPoint.dart'; // Create this file with the TracingPoint class
 class LetterData {
   static Map<String, List<TracingPoint>> urduLetters = {
     "ا": [
+      TracingPoint(Offset(150, 15)),
+      TracingPoint(Offset(150, 80)),
       TracingPoint(Offset(150, 100)),
       TracingPoint(Offset(150, 120)),
       TracingPoint(Offset(150, 140)),
       TracingPoint(Offset(150, 160)),
-      TracingPoint(Offset(150, 180)),
-      TracingPoint(Offset(150, 200)),
       TracingPoint(Offset(150, 220)),
       TracingPoint(Offset(150, 240)),
     ],
