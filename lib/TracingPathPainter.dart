@@ -7,16 +7,32 @@ class TracingPathPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (path.length < 1) return;
+    if (path.length < 2) return;
 
     final paint = Paint()
       ..color = Colors.blueAccent
       ..strokeWidth = 25
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
 
-    for (int i = 0; i < path.length - 1; i++) {
-      canvas.drawLine(path[i], path[i + 1], paint);
+    final tracePath = Path();
+    tracePath.moveTo(path[0].dx, path[0].dy);
+
+    for (int i = 1; i < path.length - 1; i++) {
+      // Use the midpoint between current and next point for smooth curves
+      Offset midPoint = (path[i] + path[i + 1]) / 2;
+      tracePath.quadraticBezierTo(
+        path[i].dx,
+        path[i].dy,
+        midPoint.dx,
+        midPoint.dy,
+      );
     }
+
+    // Draw final segment to last point
+    tracePath.lineTo(path.last.dx, path.last.dy);
+
+    canvas.drawPath(tracePath, paint);
   }
 
   @override

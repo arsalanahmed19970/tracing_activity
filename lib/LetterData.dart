@@ -14,8 +14,8 @@ class LetterData {
       TracingPoint(Offset(150, 240)),
     ],
     "ب": [
-      TracingPoint(Offset(290, 80)),
-      TracingPoint(Offset(299, 110)),
+      TracingPoint(Offset(290, 85)),
+      TracingPoint(Offset(299, 120)),
       TracingPoint(Offset(310, 145)),
       TracingPoint(Offset(285, 170)),
       // TracingPoint(Offset(257, 179)),
