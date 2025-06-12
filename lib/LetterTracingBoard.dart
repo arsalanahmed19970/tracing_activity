@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'package:tracing_activity/DraggablePointer.dart';
 import 'package:tracing_activity/LetterData.dart';
 import 'package:tracing_activity/PathAreaPainter.dart';
 import 'package:tracing_activity/TracingBubble.dart';
@@ -325,9 +324,6 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
                 painter: TracingPathPainter(tracedPath),
                 size: Size.infinite,
               ),
-              if (currentDotIndex < dotPositions.length &&
-                  !dotPositions[currentDotIndex].isNukta)
-                DraggablePointer(position: pointerPos),
               if (currentDotIndex < dotPositions.length &&
                   !dotPositions[currentDotIndex].isNukta)
                 TracingBubble(
