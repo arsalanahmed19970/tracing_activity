@@ -50,7 +50,7 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
     originalDotPositions = LetterData.urduLetters[widget.letter] ?? [];
     dotPositions = List.from(originalDotPositions);
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 50),
+      duration: const Duration(milliseconds: 90),
       vsync: this,
     );
   }

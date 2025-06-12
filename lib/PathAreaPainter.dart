@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'TracingPoint.dart';
-import 'LetterData.dart';
 
 class PathAreaPainter extends CustomPainter {
   final List<TracingPoint> dotPositions;
