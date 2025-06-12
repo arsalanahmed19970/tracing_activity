@@ -37,13 +37,16 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
   bool isPausedDueToDeviation = false;
   bool isPausedByUser = false;
 
+  // Track current screen size to detect changes
+  Size? currentScreenSize;
+
   @override
   void initState() {
     super.initState();
     originalDotPositions = LetterData.urduLetters[widget.letter] ?? [];
     dotPositions = List.from(originalDotPositions);
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 50),
       vsync: this,
     );
   }
@@ -74,11 +77,27 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
     Offset screenCenter = Offset(screenSize.width / 2, screenSize.height / 2);
     Offset offsetToCenter = screenCenter - letterCenter;
 
+    // Store the previous offset to calculate the difference
+    Offset? previousOffset;
+    if (dotPositions.isNotEmpty) {
+      // Calculate previous offset by comparing first dot positions
+      Offset previousFirstDot = dotPositions[0].position;
+      Offset originalFirstDot = originalDotPositions[0].position;
+      previousOffset = previousFirstDot - originalFirstDot;
+    }
+
+    // Update dot positions with new offset
     dotPositions = originalDotPositions
         .map(
           (p) => TracingPoint(p.position + offsetToCenter, isNukta: p.isNukta),
         )
         .toList();
+
+    // Update tracedPath if there was a previous offset (screen rotation occurred)
+    if (previousOffset != null && tracedPath.isNotEmpty) {
+      Offset offsetDifference = offsetToCenter - previousOffset;
+      tracedPath = tracedPath.map((point) => point + offsetDifference).toList();
+    }
   }
 
   void resetTracing() {
@@ -120,7 +139,20 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        centerLetter(Size(constraints.maxWidth, constraints.maxHeight));
+        Size newScreenSize = Size(constraints.maxWidth, constraints.maxHeight);
+
+        // Check if screen size has changed (rotation occurred)
+        bool screenSizeChanged =
+            currentScreenSize != null &&
+            (currentScreenSize!.width != newScreenSize.width ||
+                currentScreenSize!.height != newScreenSize.height);
+
+        // Update current screen size
+        currentScreenSize = newScreenSize;
+
+        // Center the letter (this will also update tracedPath if screen rotated)
+        centerLetter(newScreenSize);
+
         final pointerPos = currentPosition;
 
         return GestureDetector(
@@ -195,7 +227,7 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
           child: Stack(
             children: [
               CustomPaint(
-                painter: LetterOutlinePainter(widget.letter),
+                // painter: LetterOutlinePainter(widget.letter),
                 size: Size.infinite,
               ),
               ...dotPositions

@@ -10,7 +10,7 @@ class LetterOutlinePainter extends CustomPainter {
     final textStyle = TextStyle(
       fontSize: 300, // adjust size depending on screen
       color: Colors.black.withOpacity(0.1), // faint outline
-      fontFamily: 'YourUrduFont', // optional: if needed for Urdu accuracy
+      fontFamily: 'Schyler', // Using the font configured in pubspec.yaml
     );
 
     final textSpan = TextSpan(text: letter, style: textStyle);

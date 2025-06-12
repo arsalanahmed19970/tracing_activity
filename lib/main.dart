@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String selectedLetter = "ا";
   int selectedIndex = 0;
   List<String> letterList = LetterData.urduLetters.keys.toList();
+  bool _isTracingComplete = false;
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
               child: LetterTracingBoard(
                 letter: selectedLetter,
                 onCompleted: () {
-                  setState(() {}); // trigger button visibility update
+                  setState(() {
+                    _isTracingComplete = true; // Mark as complete when tracing is done
+                  });
                 },
-                isCompleted: false,
+                isCompleted: _isTracingComplete,
               ),
             ),
             Row(
@@ -73,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ? () {
                           setState(() {
                             selectedIndex--;
+                            _isTracingComplete = false; // Reset completion status
                           });
                         }
                       : null,
@@ -84,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? () {
                                 setState(() {
                                   selectedIndex++;
-                                  _isTracingComplete = true;
+                                  _isTracingComplete = false; // Reset for next letter
                                 });
                               }
                             : null)
@@ -99,11 +103,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  bool _isTracingComplete = true;
-
   void markTracingComplete() {
     setState(() {
-      _isTracingComplete = false;
+      _isTracingComplete = true;
     });
   }
 }

@@ -25,7 +25,7 @@ class LetterData {
       TracingPoint(Offset(155, 182)),
       TracingPoint(Offset(130, 162)),
       TracingPoint(Offset(128, 133)),
-      TracingPoint(Offset(180, 170), isNukta: true),
+      TracingPoint(Offset(230, 230), isNukta: true),
     ],
   };
 }
