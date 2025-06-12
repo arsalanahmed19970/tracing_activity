@@ -11,12 +11,12 @@ class DraggablePointer extends StatelessWidget {
       left: position.dx - 20,
       top: position.dy - 20,
       child: Container(
-        // width: 40,
-        // height: 40,
-        // decoration: const BoxDecoration(
-        //   color: Colors.blue,
-        //   shape: BoxShape.circle,
-        // ),
+        width: 40,
+        height: 40,
+        decoration: const BoxDecoration(
+          color: Colors.blue,
+          shape: BoxShape.circle,
+        ),
         child: const Icon(Icons.touch_app, color: Colors.white),
       ),
     );

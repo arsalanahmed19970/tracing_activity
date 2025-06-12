@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:tracing_activity/DraggablePointer.dart';
 import 'package:tracing_activity/LetterData.dart';
 import 'package:tracing_activity/PathAreaPainter.dart';
@@ -331,7 +332,10 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
                 DraggablePointer(position: pointerPos),
               if (currentDotIndex < dotPositions.length &&
                   !dotPositions[currentDotIndex].isNukta)
-                TracingBubble(position: pointerPos),
+                TracingBubble(
+                  position: pointerPos,
+                  direction: calculateDirection(),
+                ),
             ],
           ),
         );
@@ -360,6 +364,27 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
     final currentPoint = dotPositions[currentDotIndex];
     double threshold = currentPoint.isNukta ? 15 : 25;
     return (position - currentPoint.position).distance < threshold;
+  }
+
+  double calculateDirection() {
+    if (currentDotIndex >= dotPositions.length - 1) {
+      // If we're at the last dot, use the direction from the previous dot
+      if (currentDotIndex > 0) {
+        final current = dotPositions[currentDotIndex].position;
+        final previous = dotPositions[currentDotIndex - 1].position;
+        final direction = (current - previous).direction;
+        // Convert from x-axis based angle to rotation for upward-pointing arrow
+        return direction + (pi / 2); // Add 90 degrees to align with arrow
+      }
+      return pi; // Default downward direction for arrow_upward icon
+    }
+    
+    // Calculate direction from current dot to next dot
+    final current = dotPositions[currentDotIndex].position;
+    final next = dotPositions[currentDotIndex + 1].position;
+    final direction = (next - current).direction;
+    // Convert from x-axis based angle to rotation for upward-pointing arrow
+    return direction + (pi / 2); // Add 90 degrees to align with arrow
   }
 }
 
