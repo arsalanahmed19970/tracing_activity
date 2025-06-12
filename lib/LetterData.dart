@@ -35,9 +35,9 @@ class LetterData {
   static Map<String, List<Offset>> pathAreaOffsets = {
     "ا": [
       // Additional intermediate points between main dots for smoother path
-      Offset(150, 40),  // Between 30 and 50
-      Offset(150, 57),  // Between 50 and 65
-      Offset(150, 77),  // Between 65 and 90
+      Offset(150, 40), // Between 30 and 50
+      Offset(150, 57), // Between 50 and 65
+      Offset(150, 77), // Between 65 and 90
       Offset(150, 100), // Between 90 and 110
       Offset(150, 120), // Between 110 and 130
       Offset(150, 140), // Between 130 and 150
@@ -59,7 +59,7 @@ class LetterData {
       Offset(140, 140), // Additional curve point
       Offset(180, 110), // Additional curve point
       Offset(220, 100), // Additional curve point
-      Offset(260, 95),  // Additional curve point
+      Offset(260, 95), // Additional curve point
     ],
   };
 }
