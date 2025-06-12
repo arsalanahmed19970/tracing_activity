@@ -5,15 +5,15 @@ class LetterData {
   static Map<String, List<TracingPoint>> urduLetters = {
     "ا": [
       TracingPoint(Offset(150, 30)),
-      TracingPoint(Offset(150, 50)),
-      TracingPoint(Offset(150, 65)),
+      TracingPoint(Offset(150, 60)),
       TracingPoint(Offset(150, 90)),
-      TracingPoint(Offset(150, 110)),
-      TracingPoint(Offset(150, 130)),
+      TracingPoint(Offset(150, 120)),
       TracingPoint(Offset(150, 150)),
-      TracingPoint(Offset(150, 190)),
-      TracingPoint(Offset(150, 205)),
-      TracingPoint(Offset(150, 230)),
+      TracingPoint(Offset(150, 180)),
+      TracingPoint(Offset(150, 210)),
+      TracingPoint(Offset(150, 240)),
+      TracingPoint(Offset(150, 270)),
+      TracingPoint(Offset(150, 300)),
     ],
     "ب": [
       TracingPoint(Offset(290, 85)),
