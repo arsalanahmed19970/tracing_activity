@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tracing_activity/LetterData.dart';
 import 'dart:math';
+import 'package:lottie/lottie.dart';
 
 import 'package:tracing_activity/LetterTracingBoard.dart';
 
@@ -47,58 +48,92 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Urdu Letter Tracing")),
-      body: Container(
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 98, 236, 119), // Green background like your image
-          // image: DecorationImage(
-          //   image: AssetImage('assets/bear.jpg'), // Optional
-          //   fit: BoxFit.cover,
-          // ),
-        ),
-        child: Column(
-          children: [
-            Expanded(
-              child: LetterTracingBoard(
-                letter: selectedLetter,
-                onCompleted: () {
-                  setState(() {
-                    _isTracingComplete = true; // Mark as complete when tracing is done
-                  });
-                },
-                isCompleted: _isTracingComplete,
-              ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Color.fromARGB(
+                255,
+                98,
+                236,
+                119,
+              ), // Green background like your image
+              // image: DecorationImage(
+              //   image: AssetImage('assets/bear.jpg'), // Optional
+              //   fit: BoxFit.cover,
+              // ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            child: Column(
               children: [
-                ElevatedButton(
-                  onPressed: selectedIndex > 0
-                      ? () {
+                Expanded(
+                  child: LetterTracingBoard(
+                    letter: selectedLetter,
+                    onCompleted: () {
+                      setState(() {
+                        _isTracingComplete =
+                            true; // Mark as complete when tracing is done
+                      });
+
+                      // Automatically advance to next letter after a short delay
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        if (mounted && selectedIndex < letterList.length - 1) {
                           setState(() {
-                            selectedIndex--;
-                            _isTracingComplete = false; // Reset completion status
+                            selectedIndex++;
+                            _isTracingComplete = false; // Reset for next letter
                           });
                         }
-                      : null,
-                  child: const Text("Previous"),
+                      });
+                    },
+                    isCompleted: _isTracingComplete,
+                  ),
                 ),
-                ElevatedButton(
-                  onPressed: _isTracingComplete
-                      ? (selectedIndex < letterList.length - 1
-                            ? () {
-                                setState(() {
-                                  selectedIndex++;
-                                  _isTracingComplete = false; // Reset for next letter
-                                });
-                              }
-                            : null)
-                      : null,
-                  child: const Text("Next"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: selectedIndex > 0
+                          ? () {
+                              setState(() {
+                                selectedIndex--;
+                                _isTracingComplete =
+                                    false; // Reset completion status
+                              });
+                            }
+                          : null,
+                      child: const Text("Previous"),
+                    ),
+                    // ElevatedButton(
+                    //   onPressed: selectedIndex < letterList.length - 1
+                    //       ? () {
+                    //           setState(() {
+                    //             selectedIndex++;
+                    //             _isTracingComplete = false; // Reset for next letter
+                    //           });
+                    //         }
+                    //       : null,
+                    //   child: const Text("Next"),
+                    // ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          // Lottie animation in bottom right corner
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Container(
+              width: 300,
+              height: 300,
+              child: Lottie.asset(
+                'assets/Animation1.json', // Replace with your JSON file path
+                fit: BoxFit.contain,
+                repeat: true,
+                animate: true,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
