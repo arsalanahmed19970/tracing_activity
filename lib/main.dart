@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 300,
               height: 300,
               child: Lottie.asset(
-                'assets/Animation1.json', // Replace with your JSON file path
+                'assets/Animation1.json',
                 fit: BoxFit.contain,
                 repeat: true,
                 animate: true,

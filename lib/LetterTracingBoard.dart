@@ -37,12 +37,10 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
   late AnimationController _controller;
   bool isPausedDueToDeviation = false;
   bool isPausedByUser = false;
-  bool isDragging = false; // Track if user is actually dragging
-  Offset? dragStartPosition; // Track where dragging started
-  final double minDragDistance =
-      15.0; // Minimum distance to consider as dragging
+  bool isDragging = false;
+  Offset? dragStartPosition;
+  final double minDragDistance = 15.0;
 
-  // Track current screen size to detect changes
   Size? currentScreenSize;
 
   @override
@@ -378,7 +376,7 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
       }
       return pi; // Default downward direction for arrow_upward icon
     }
-    
+
     // Calculate direction from current dot to next dot
     final current = dotPositions[currentDotIndex].position;
     final next = dotPositions[currentDotIndex + 1].position;
