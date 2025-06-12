@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tracing_activity/DraggablePointer.dart';
 import 'package:tracing_activity/LetterData.dart';
-import 'package:tracing_activity/LetterOutlinePainter.dart';
 import 'package:tracing_activity/PathAreaPainter.dart';
 import 'package:tracing_activity/TracingBubble.dart';
 import 'package:tracing_activity/TracingDot.dart';
@@ -37,6 +36,10 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
   late AnimationController _controller;
   bool isPausedDueToDeviation = false;
   bool isPausedByUser = false;
+  bool isDragging = false; // Track if user is actually dragging
+  Offset? dragStartPosition; // Track where dragging started
+  final double minDragDistance =
+      15.0; // Minimum distance to consider as dragging
 
   // Track current screen size to detect changes
   Size? currentScreenSize;
@@ -138,6 +141,8 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
       tracedPath.clear();
       currentDotIndex = 0;
       isTracingComplete = false;
+      isDragging = false; // Reset dragging state
+      dragStartPosition = null; // Clear drag start position
       stopNuktaBlinking();
     });
   }
@@ -190,6 +195,9 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
 
         return GestureDetector(
           onPanStart: (details) {
+            // Store the initial position
+            dragStartPosition = details.localPosition;
+
             if (currentDotIndex == 0) {
               final startPoint = dotPositions[0].position;
               final distance = (details.localPosition - startPoint).distance;
@@ -199,6 +207,7 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
                   isTracingComplete = false;
                   stopNuktaBlinking();
                   isPausedDueToDeviation = false;
+                  isDragging = false; // Start with not dragging
                 });
               }
             } else {
@@ -207,11 +216,16 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
               if (distance < 25) {
                 setState(() {
                   isPausedDueToDeviation = false;
+                  isDragging = false; // Start with not dragging
                 });
               }
             }
           },
           onPanEnd: (_) {
+            setState(() {
+              isDragging = false; // Stop dragging
+              dragStartPosition = null; // Clear start position
+            });
             if (!isPausedDueToDeviation && !isLastNonNuktaPoint()) {
               setState(() {
                 isPausedByUser = true;
@@ -219,6 +233,10 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
             }
           },
           onPanCancel: () {
+            setState(() {
+              isDragging = false; // Stop dragging
+              dragStartPosition = null; // Clear start position
+            });
             if (!isPausedDueToDeviation && !isLastNonNuktaPoint()) {
               setState(() {
                 isPausedByUser = true;
@@ -230,6 +248,17 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
                 isPausedDueToDeviation)
               return;
 
+            // Check if user has moved enough to be considered dragging
+            if (!isDragging && dragStartPosition != null) {
+              final distanceMoved =
+                  (details.localPosition - dragStartPosition!).distance;
+              if (distanceMoved >= minDragDistance) {
+                setState(() {
+                  isDragging = true;
+                });
+              }
+            }
+
             if (isTooFarFromPath(details.localPosition)) {
               setState(() {
                 isPausedDueToDeviation = true;
@@ -238,7 +267,8 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
             }
 
             final newPos = details.localPosition;
-            if (isCloseToNextDot(newPos)) {
+            if (isCloseToNextDot(newPos) && isDragging) {
+              // Only advance if dragging
               final currentPoint = dotPositions[currentDotIndex];
               if (!currentPoint.isNukta) {
                 setState(() {
@@ -322,6 +352,8 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
         tracedPath.clear();
         currentDotIndex = 0;
         isTracingComplete = false;
+        isDragging = false; // Reset dragging state
+        dragStartPosition = null; // Clear drag start position
         _controller.stop();
       });
     }
