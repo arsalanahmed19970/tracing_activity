@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracing_activity/DraggablePointer.dart';
 import 'package:tracing_activity/LetterData.dart';
 import 'package:tracing_activity/LetterOutlinePainter.dart';
+import 'package:tracing_activity/PathAreaPainter.dart';
 import 'package:tracing_activity/TracingBubble.dart';
 import 'package:tracing_activity/TracingDot.dart';
 import 'package:tracing_activity/TracingPathPainter.dart';
@@ -98,6 +99,38 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
       Offset offsetDifference = offsetToCenter - previousOffset;
       tracedPath = tracedPath.map((point) => point + offsetDifference).toList();
     }
+  }
+
+  List<Offset> getCenteredPathAreaOffsets() {
+    if (originalDotPositions.isEmpty) return [];
+
+    // Calculate the same offset that was applied to the dots
+    double minX = originalDotPositions
+        .map((e) => e.position.dx)
+        .reduce((a, b) => a < b ? a : b);
+    double maxX = originalDotPositions
+        .map((e) => e.position.dx)
+        .reduce((a, b) => a > b ? a : b);
+    double minY = originalDotPositions
+        .map((e) => e.position.dy)
+        .reduce((a, b) => a < b ? a : b);
+    double maxY = originalDotPositions
+        .map((e) => e.position.dy)
+        .reduce((a, b) => a > b ? a : b);
+
+    Offset letterCenter = Offset((minX + maxX) / 2, (minY + maxY) / 2);
+    Offset screenCenter = Offset(
+      currentScreenSize?.width ?? 400,
+      currentScreenSize?.height ?? 600,
+    );
+    Offset offsetToCenter = screenCenter - letterCenter;
+
+    // Apply the same offset to path area offsets
+    final originalPathAreaOffsets =
+        LetterData.pathAreaOffsets[widget.letter] ?? [];
+    return originalPathAreaOffsets
+        .map((offset) => offset + offsetToCenter)
+        .toList();
   }
 
   void resetTracing() {
@@ -226,8 +259,16 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
           },
           child: Stack(
             children: [
+              // Path area for guidance using specific offsets
               CustomPaint(
-                // painter: LetterOutlinePainter(widget.letter),
+                painter: PathAreaPainter(
+                  dotPositions,
+                  getCenteredPathAreaOffsets(),
+                  pathWidth: 30.0,
+                  currentDotIndex: currentDotIndex,
+                  showCompletedPath: true,
+                  animationValue: 0.0, // No animation for now
+                ),
                 size: Size.infinite,
               ),
               ...dotPositions
