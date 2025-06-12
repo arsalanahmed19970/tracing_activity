@@ -311,17 +311,13 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
                     .where((tp) => tp.isNukta)
                     .map(
                       (tp) => Positioned(
-                        left: tp.position.dx - 5,
-                        top: tp.position.dy - 5,
+                        left: tp.position.dx - 8,
+                        top: tp.position.dy - 8,
                         child: FadeTransition(
                           opacity: _controller,
-                          child: Container(
-                            width: 6,
-                            height: 6,
-                            decoration: const BoxDecoration(
-                              color: Colors.red,
-                              shape: BoxShape.circle,
-                            ),
+                          child: CustomPaint(
+                            size: const Size(16, 16),
+                            painter: RhombusPainter(),
                           ),
                         ),
                       ),
@@ -365,4 +361,31 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
     double threshold = currentPoint.isNukta ? 15 : 25;
     return (position - currentPoint.position).distance < threshold;
   }
+}
+
+class RhombusPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.red
+      ..style = PaintingStyle.fill;
+
+    final path = Path();
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+    final halfWidth = size.width / 2;
+    final halfHeight = size.height / 2;
+
+    // Create rhombus shape
+    path.moveTo(centerX, centerY - halfHeight); // Top point
+    path.lineTo(centerX + halfWidth, centerY); // Right point
+    path.lineTo(centerX, centerY + halfHeight); // Bottom point
+    path.lineTo(centerX - halfWidth, centerY); // Left point
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
