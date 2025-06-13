@@ -51,18 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Stack(
         children: [
           Container(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(
-                255,
-                98,
-                236,
-                119,
-              ), // Green background like your image
-              // image: DecorationImage(
-              //   image: AssetImage('assets/bear.jpg'), // Optional
-              //   fit: BoxFit.cover,
-              // ),
-            ),
+            decoration: BoxDecoration(color: Color.fromARGB(255, 98, 236, 119)),
             child: Column(
               children: [
                 Expanded(
@@ -71,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onCompleted: () {
                       setState(() {
                         _isTracingComplete =
-                            true; // Mark as complete when tracing is done
+                            true; 
                       });
 
                       // Automatically advance to next letter after a short delay
