@@ -20,7 +20,7 @@ class PathAreaPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (dotPositions.length < 2) return;
+    // if (dotPositions.length < 2) return;
 
     // Get non-nukta dots
     final nonNuktaDots = dotPositions.where((tp) => !tp.isNukta).toList();

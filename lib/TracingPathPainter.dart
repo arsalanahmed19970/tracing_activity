@@ -11,9 +11,10 @@ class TracingPathPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = Colors.blueAccent
-      ..strokeWidth = 25
+      ..strokeWidth = 30
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
 
     final tracePath = Path();
     tracePath.moveTo(path[0].dx, path[0].dy);
@@ -30,7 +31,9 @@ class TracingPathPainter extends CustomPainter {
     }
 
     // Draw final segment to last point
-    tracePath.lineTo(path.last.dx, path.last.dy);
+    if (path.length > 1) {
+      tracePath.lineTo(path.last.dx, path.last.dy);
+    }
 
     canvas.drawPath(tracePath, paint);
   }

@@ -4,25 +4,23 @@ class TracingDot extends StatelessWidget {
   final Offset position;
   final bool isNukta;
   const TracingDot({required this.position, this.isNukta = false, super.key});
+  
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       left: position.dx - (isNukta ? 8 : 5),
       top: position.dy - (isNukta ? 8 : 5),
-      child: isNukta 
-        ? CustomPaint(
-            size: const Size(16, 16),
-            painter: RhombusPainter(),
-          )
-        : Container(
-            width: 10,
-            height: 10,
-            decoration: const BoxDecoration(
-              color: Colors.black,
-              shape: BoxShape.circle,
+      child: isNukta
+          ? CustomPaint(size: const Size(16, 16), painter: RhombusPainter())
+          : Container(
+              width: 10,
+              height: 10,
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                shape: BoxShape.circle,
+              ),
             ),
-          ),
     );
   }
 }

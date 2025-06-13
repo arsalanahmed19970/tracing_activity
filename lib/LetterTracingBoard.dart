@@ -31,14 +31,14 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
   List<Offset> tracedPath = [];
   int currentDotIndex = 0;
   bool isTracingComplete = false;
-  final double maxDeviationThreshold = 90.0;
+  final double maxDeviationThreshold = 150.0;
 
   late AnimationController _controller;
   bool isPausedDueToDeviation = false;
   bool isPausedByUser = false;
   bool isDragging = false;
   Offset? dragStartPosition;
-  final double minDragDistance = 15.0;
+  final double minDragDistance = 5.0;
 
   Size? currentScreenSize;
 
@@ -191,146 +191,156 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
 
         final pointerPos = currentPosition;
 
-        return GestureDetector(
-          onPanStart: (details) {
-            // Store the initial position
-            dragStartPosition = details.localPosition;
+        return Container(
+          // Add padding to increase touch area around the entire board
+          padding: const EdgeInsets.all(20),
+          child: GestureDetector(
+            // Improved gesture detection with larger hit area
+            behavior: HitTestBehavior.opaque,
 
-            if (currentDotIndex == 0) {
-              final startPoint = dotPositions[0].position;
-              final distance = (details.localPosition - startPoint).distance;
-              if (distance < 25) {
-                setState(() {
-                  tracedPath.add(startPoint);
-                  isTracingComplete = false;
-                  stopNuktaBlinking();
-                  isPausedDueToDeviation = false;
-                  isDragging = false; // Start with not dragging
-                });
+            onPanStart: (details) {
+              // Store the initial position
+              dragStartPosition = details.localPosition;
+
+              if (currentDotIndex == 0) {
+                final startPoint = dotPositions[0].position;
+                final distance = (details.localPosition - startPoint).distance;
+                // Increased threshold from 25 to 40 for easier start
+                if (distance < 60) {
+                  setState(() {
+                    tracedPath.add(startPoint);
+                    isTracingComplete = false;
+                    stopNuktaBlinking();
+                    isPausedDueToDeviation = false;
+                    isDragging = false; // Start with not dragging
+                  });
+                }
+              } else {
+                final currentTarget = dotPositions[currentDotIndex].position;
+                final distance =
+                    (details.localPosition - currentTarget).distance;
+                // Increased threshold from 25 to 40 for easier continuation
+                if (distance < 60) {
+                  setState(() {
+                    isPausedDueToDeviation = false;
+                    isDragging = false; // Start with not dragging
+                  });
+                }
               }
-            } else {
-              final currentTarget = dotPositions[currentDotIndex].position;
-              final distance = (details.localPosition - currentTarget).distance;
-              if (distance < 25) {
-                setState(() {
-                  isPausedDueToDeviation = false;
-                  isDragging = false; // Start with not dragging
-                });
-              }
-            }
-          },
-          onPanEnd: (_) {
-            setState(() {
-              isDragging = false; // Stop dragging
-              dragStartPosition = null; // Clear start position
-            });
-            if (!isPausedDueToDeviation && !isLastNonNuktaPoint()) {
+            },
+            onPanEnd: (_) {
               setState(() {
-                isPausedByUser = true;
+                isDragging = false; // Stop dragging
+                dragStartPosition = null; // Clear start position
               });
-            }
-          },
-          onPanCancel: () {
-            setState(() {
-              isDragging = false; // Stop dragging
-              dragStartPosition = null; // Clear start position
-            });
-            if (!isPausedDueToDeviation && !isLastNonNuktaPoint()) {
+              if (!isPausedDueToDeviation && !isLastNonNuktaPoint()) {
+                setState(() {
+                  isPausedByUser = true;
+                });
+              }
+            },
+            onPanCancel: () {
               setState(() {
-                isPausedByUser = true;
+                isDragging = false; // Stop dragging
+                dragStartPosition = null; // Clear start position
               });
-            }
-          },
-          onPanUpdate: (details) {
-            if (currentDotIndex >= dotPositions.length ||
-                isPausedDueToDeviation)
-              return;
-
-            // Check if user has moved enough to be considered dragging
-            if (!isDragging && dragStartPosition != null) {
-              final distanceMoved =
-                  (details.localPosition - dragStartPosition!).distance;
-              if (distanceMoved >= minDragDistance) {
+              if (!isPausedDueToDeviation && !isLastNonNuktaPoint()) {
                 setState(() {
-                  isDragging = true;
+                  isPausedByUser = true;
                 });
               }
-            }
+            },
+            onPanUpdate: (details) {
+              if (currentDotIndex >= dotPositions.length ||
+                  isPausedDueToDeviation)
+                return;
 
-            if (isTooFarFromPath(details.localPosition)) {
-              setState(() {
-                isPausedDueToDeviation = true;
-              });
-              return;
-            }
-
-            final newPos = details.localPosition;
-            if (isCloseToNextDot(newPos) && isDragging) {
-              // Only advance if dragging
-              final currentPoint = dotPositions[currentDotIndex];
-              if (!currentPoint.isNukta) {
-                setState(() {
-                  tracedPath.add(currentPoint.position);
-                });
+              // Check if user has moved enough to be considered dragging
+              if (!isDragging && dragStartPosition != null) {
+                final distanceMoved =
+                    (details.localPosition - dragStartPosition!).distance;
+                if (distanceMoved >= minDragDistance) {
+                  setState(() {
+                    isDragging = true;
+                  });
+                }
               }
 
-              if (isLastNonNuktaPoint()) {
+              if (isTooFarFromPath(details.localPosition)) {
                 setState(() {
-                  isTracingComplete = true;
-                  startNuktaBlinking();
+                  isPausedDueToDeviation = true;
                 });
-                widget.onCompleted();
-              } else if (!currentPoint.isNukta) {
-                currentDotIndex++;
+                return;
               }
-            }
-          },
-          child: Stack(
-            children: [
-              // Path area for guidance using specific offsets
-              CustomPaint(
-                painter: PathAreaPainter(
-                  dotPositions,
-                  getCenteredPathAreaOffsets(),
-                  pathWidth: 30.0,
-                  currentDotIndex: currentDotIndex,
-                  showCompletedPath: true,
-                  animationValue: 0.0, // No animation for now
-                ),
-                size: Size.infinite,
-              ),
-              ...dotPositions
-                  .where((tp) => !tp.isNukta)
-                  .map(
-                    (tp) => TracingDot(position: tp.position, isNukta: false),
+
+              final newPos = details.localPosition;
+              if (isCloseToNextDot(newPos) && isDragging) {
+                // Only advance if dragging
+                final currentPoint = dotPositions[currentDotIndex];
+                if (!currentPoint.isNukta) {
+                  setState(() {
+                    tracedPath.add(currentPoint.position);
+                  });
+                }
+
+                if (isLastNonNuktaPoint()) {
+                  setState(() {
+                    isTracingComplete = true;
+                    startNuktaBlinking();
+                  });
+                  widget.onCompleted();
+                } else if (!currentPoint.isNukta) {
+                  currentDotIndex++;
+                }
+              }
+            },
+            child: Stack(
+              children: [
+                // Path area for guidance using specific offsets
+                CustomPaint(
+                  painter: PathAreaPainter(
+                    dotPositions,
+                    getCenteredPathAreaOffsets(),
+                    pathWidth: 40.0,
+                    currentDotIndex: currentDotIndex,
+                    showCompletedPath: true,
+                    animationValue: 0.0, // No animation for now
                   ),
-              if (isTracingComplete)
+                  size: Size.infinite,
+                ),
                 ...dotPositions
-                    .where((tp) => tp.isNukta)
+                    .where((tp) => !tp.isNukta)
                     .map(
-                      (tp) => Positioned(
-                        left: tp.position.dx - 8,
-                        top: tp.position.dy - 8,
-                        child: FadeTransition(
-                          opacity: _controller,
-                          child: CustomPaint(
-                            size: const Size(16, 16),
-                            painter: RhombusPainter(),
+                      (tp) => TracingDot(position: tp.position, isNukta: false),
+                    ),
+                if (isTracingComplete)
+                  ...dotPositions
+                      .where((tp) => tp.isNukta)
+                      .map(
+                        (tp) => Positioned(
+                          left: tp.position.dx - 8,
+                          top: tp.position.dy - 8,
+                          child: FadeTransition(
+                            opacity: _controller,
+                            child: CustomPaint(
+                              size: const Size(16, 16),
+                              painter: RhombusPainter(),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-              CustomPaint(
-                painter: TracingPathPainter(tracedPath),
-                size: Size.infinite,
-              ),
-              if (currentDotIndex < dotPositions.length &&
-                  !dotPositions[currentDotIndex].isNukta)
-                TracingBubble(
-                  position: pointerPos,
-                  direction: calculateDirection(),
+                CustomPaint(
+                  painter: TracingPathPainter(tracedPath),
+                  size: Size.infinite,
                 ),
-            ],
+                if (currentDotIndex < dotPositions.length &&
+                    !dotPositions[currentDotIndex].isNukta)
+                  TracingBubble(
+                    position: pointerPos,
+                    direction: calculateDirection(),
+                  ),
+              ],
+            ),
           ),
         );
       },
@@ -356,7 +366,7 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
   bool isCloseToNextDot(Offset position) {
     if (currentDotIndex >= dotPositions.length) return false;
     final currentPoint = dotPositions[currentDotIndex];
-    double threshold = currentPoint.isNukta ? 15 : 25;
+    double threshold = currentPoint.isNukta ? 40 : 60;
     return (position - currentPoint.position).distance < threshold;
   }
 
