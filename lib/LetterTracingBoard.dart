@@ -275,7 +275,6 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
 
               final newPos = details.localPosition;
               if (isCloseToNextDot(newPos) && isDragging) {
-                // Only advance if dragging
                 final currentPoint = dotPositions[currentDotIndex];
                 if (!currentPoint.isNukta) {
                   setState(() {
@@ -296,7 +295,6 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
             },
             child: Stack(
               children: [
-                // Path area for guidance using specific offsets
                 CustomPaint(
                   painter: PathAreaPainter(
                     dotPositions,
@@ -304,7 +302,7 @@ class _LetterTracingBoardState extends State<LetterTracingBoard>
                     pathWidth: 40.0,
                     currentDotIndex: currentDotIndex,
                     showCompletedPath: true,
-                    animationValue: 0.0, // No animation for now
+                    animationValue: 0.0,
                   ),
                   size: Size.infinite,
                 ),
