@@ -17,7 +17,7 @@ class TracingDot extends StatelessWidget {
               width: 10,
               height: 10,
               decoration: const BoxDecoration(
-                color: Colors.black,
+                color: Color.fromARGB(255, 223, 217, 217),
                 shape: BoxShape.circle,
               ),
             ),
